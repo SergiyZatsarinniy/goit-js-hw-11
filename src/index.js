@@ -12,7 +12,7 @@ const BASE_URL = 'https://pixabay.com/api/';
 let page = 1;
 let currentQuery = '';
 
-loadMoreBtn.style.display = 'none';
+loadMoreBtn.classList.add('is-hidden');
 
 formEl.addEventListener('submit', handleFormSubmit);
 loadMoreBtn.addEventListener('click', loadMoreImages);
@@ -31,7 +31,7 @@ async function handleFormSubmit(event) {
   page = 1;
   currentQuery = searchQuery;
   galleryEl.innerHTML = '';
-  loadMoreBtn.style.display = 'none';
+  loadMoreBtn.classList.add('is-hidden');
 
   try {
     const { data } = await axios.get(BASE_URL, {
@@ -78,15 +78,22 @@ async function loadMoreImages() {
       },
     });
 
+    renderImages(data.hits);
+    scrollToNextGroup();
+    lightbox.refresh();
+
     if (data.hits.length === 0) {
       hideLoadMoreButton();
       showEndOfResultsMessage();
       return;
     }
 
-    renderImages(data.hits);
-    scrollToNextGroup();
-    lightbox.refresh();
+    if (data.hits.length < 40) {
+      hideLoadMoreButton();
+      showEndOfResultsMessage();
+    } else {
+      showLoadMoreButton();
+    }
   } catch (error) {
     console.log(error);
     showErrorMessage();
@@ -124,11 +131,11 @@ function renderImages(images) {
 }
 
 function hideLoadMoreButton() {
-  loadMoreBtn.style.display = 'none';
+  loadMoreBtn.classList.add('is-hidden');
 }
 
 function showLoadMoreButton() {
-  loadMoreBtn.style.display = 'block';
+  loadMoreBtn.classList.remove('is-hidden');
 }
 
 function scrollToNextGroup() {
