@@ -11,6 +11,7 @@ const API_KEY = '37338345-b43c8e94ee90a42a68ea51720';
 const BASE_URL = 'https://pixabay.com/api/';
 let page = 1;
 let currentQuery = '';
+let totalHits = 0;
 
 loadMoreBtn.classList.add('is-hidden');
 
@@ -46,6 +47,8 @@ async function handleFormSubmit(event) {
       },
     });
 
+    // totalHits = data.totalHits;
+
     if (data.hits.length === 0) {
       showNoImagesMessage();
       return;
@@ -53,6 +56,9 @@ async function handleFormSubmit(event) {
 
     renderImages(data.hits);
     showLoadMoreButton();
+    if (data.hits.length < 40) {
+      hideLoadMoreButton();
+    }
     showSuccessMessage(data.totalHits);
 
     lightbox.refresh();
@@ -78,21 +84,19 @@ async function loadMoreImages() {
       },
     });
 
-    renderImages(data.hits);
-    scrollToNextGroup();
-    lightbox.refresh();
-
     if (data.hits.length === 0) {
       hideLoadMoreButton();
       showEndOfResultsMessage();
       return;
     }
 
+    renderImages(data.hits);
+    scrollToNextGroup();
+    lightbox.refresh();
+
     if (data.hits.length < 40) {
       hideLoadMoreButton();
       showEndOfResultsMessage();
-    } else {
-      showLoadMoreButton();
     }
   } catch (error) {
     console.log(error);
